@@ -36,6 +36,29 @@ async function register(req, res) {
   }
 }
 
+async function login(req, res) {
+    const { username, password } = req.body;
+    try {
+      if (!username || !password) {
+        throw new Error("Missing username or password");
+      }
+  
+      const user = (
+        await query(
+          "SELECT * FROM tbl_62_users WHERE username = ? AND password = ?",
+          [username, password]
+        )
+      )[0];
+  
+      if (!user) {
+        throw new Error("Invalid username or password");
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
   
   module.exports = {
     usersController: { register, login },
