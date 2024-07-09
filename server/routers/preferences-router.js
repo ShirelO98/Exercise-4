@@ -8,6 +8,6 @@ const preferencesRouter = Router();
 preferencesRouter.get("/", preferencesController.getPreferences);
 preferencesRouter.post("/", preferencesController.createPreferences);
 preferencesRouter.put("/:id", preferencesController.updatePreferences);
-// preferencesRouter.get("/calculate", preferencesController.//add);
+preferencesRouter.get("/calculate", preferencesController.calculatePreferences);
 
 module.exports = { preferencesRouter };
