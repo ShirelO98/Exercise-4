@@ -6,7 +6,7 @@ const {
 const preferencesRouter = Router();
 
 preferencesRouter.get("/", preferencesController.//add);
-preferencesRouter.post("/", preferencesController.//add);
+preferencesRouter.post("/", preferencesController.createPreferences);
 preferencesRouter.put("/:id", preferencesController.//add);
 preferencesRouter.get("/calculate", preferencesController.//add);
 
