@@ -36,7 +36,7 @@ function findOverlappingDateRange(dateRanges) {
   if (maxStartDate <= minEndDate) {
     return { start: maxStartDate, end: minEndDate };
   } else {
-    return null;
+    return null; 
   }
 }
 
@@ -212,12 +212,15 @@ const calculatePreferences = async (req, res) => {
   });
 };
 
-
 module.exports = {
   preferencesController: {
     getPreferences,
     createPreferences,
     updatePreferences,
-    calculatePreferences
-  }
+    calculatePreferences,
+  },
 };
+
+async function getAllPreferences() {
+  return await query("SELECT * FROM tbl_62_preferences");
+}
