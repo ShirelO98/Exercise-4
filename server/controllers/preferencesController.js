@@ -134,12 +134,17 @@ const updatePreferences = async (req, res) => {
   }
 };
 
+const calculatePreferences = async (req, res) => {
+  const preferences = await getAllPreferences();
+
+}
 
 
 module.exports = {
   preferencesController: {
     getPreferences,
     createPreferences,
-    updatePreferences
+    updatePreferences,
+    calculatePreferences
   }
 };
