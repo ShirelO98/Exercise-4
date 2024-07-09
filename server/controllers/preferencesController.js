@@ -51,6 +51,15 @@ const validateVacationKey = (type) => {
   }
 };
 
+const getPreferences = async (req, res) => {
+  try {
+    const preferences = await getAllPreferences();
+    res.status(200).json(preferences);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 const createPreferences = async (req, res) => {
   const { destination, start_date, end_date, access_code, type } = req.body;
 
@@ -129,6 +138,7 @@ const updatePreferences = async (req, res) => {
 
 module.exports = {
   preferencesController: {
+    getPreferences,
     createPreferences,
     updatePreferences
   }
