@@ -23,6 +23,23 @@ const DESTINATIONS = [
   "Dubai",
 ];
 
+function findOverlappingDateRange(dateRanges) {
+  if (!dateRanges.length) return null;
+
+  let maxStartDate = new Date(
+    Math.max(...dateRanges.map((range) => new Date(range.start).getTime()))
+  );
+  let minEndDate = new Date(
+    Math.min(...dateRanges.map((range) => new Date(range.end).getTime()))
+  );
+
+  if (maxStartDate <= minEndDate) {
+    return { start: maxStartDate, end: minEndDate };
+  } else {
+    return null;
+  }
+}
+
 const findUserByAccessCode = async (accessCode) => {
   return (
     await query("SELECT * FROM tbl_62_users WHERE access_code = ?", [
@@ -137,7 +154,63 @@ const updatePreferences = async (req, res) => {
 const calculatePreferences = async (req, res) => {
   const preferences = await getAllPreferences();
 
-}
+  if (preferences.length === 0) {
+    res.status(400).json({ message: "No preferences found" });
+    return;
+  }
+
+  if (preferences.length < 5) {
+    res
+      .status(400)
+      .json({ message: "Not enough preferences to calculate (need 5)" });
+    return;
+  }
+
+  const destinationCount = preferences.reduce((acc, preference) => {
+    acc[preference.destination] = (acc[preference.destination] || 0) + 1;
+    return acc;
+  }, {});
+
+  const maxDestination = Object.keys(destinationCount).reduce((a, b) =>
+    destinationCount[a] > destinationCount[b] ? a : b
+  );
+
+  const vacationTypeCount = preferences.reduce((acc, preference) => {
+    acc[preference.type] = (acc[preference.type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const maxVacationType = Object.keys(vacationTypeCount).reduce((a, b) =>
+    vacationTypeCount[a] > vacationTypeCount[b] ? a : b
+  );
+
+  const overlappingDateRange = findOverlappingDateRange(
+    preferences.map((preference) => ({
+      start: preference.start_date,
+      end: preference.end_date,
+    }))
+  );
+
+  if (!overlappingDateRange) {
+    const firstPreference = preferences[0];
+    res.status(400).json({
+      selected_destination: firstPreference.destination,
+      selected_vacationType: firstPreference.type,
+      start_date: firstPreference.start_date,
+      end_date: firstPreference.end_date,
+      message: "No overlapping date range found (first preference selected)",
+    });
+    return;
+  }
+
+  res.status(200).json({
+    selected_destination: maxDestination,
+    selected_vacationType:
+      VACATION_TYPE[maxVacationType] + " (id: " + maxVacationType + ")",
+    end_date: overlappingDateRange.end.toISOString(),
+    start_date: overlappingDateRange.start.toISOString(),
+  });
+};
 
 
 module.exports = {
